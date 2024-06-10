@@ -8,7 +8,7 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.VueAuthenticate = factory());
+  (global = global || self, global.VueAuthenticate = factory());
 }(this, (function () { 'use strict';
 
   if (typeof Object.assign != 'function') {
@@ -997,7 +997,7 @@
     return options.join(',');
   };
 
-  var defaultProviderConfig$1 = {
+  var defaultProviderConfig = {
     name: null,
     url: null,
     authorizationEndpoint: null,
@@ -1014,7 +1014,7 @@
   var OAuth = function OAuth($http, storage, providerConfig, options) {
     this.$http = $http;
     this.storage = storage;
-    this.providerConfig = objectExtend({}, defaultProviderConfig$1);
+    this.providerConfig = objectExtend({}, defaultProviderConfig);
     this.providerConfig = objectExtend(this.providerConfig, providerConfig);
     this.options = options;
   };
@@ -1125,7 +1125,7 @@
    * Default provider configuration
    * @type {Object}
    */
-  var defaultProviderConfig = {
+  var defaultProviderConfig$1 = {
     name: null,
     url: null,
     clientId: null,
@@ -1150,7 +1150,7 @@
   var OAuth2 = function OAuth2($http, storage, providerConfig, options) {
     this.$http = $http;
     this.storage = storage;
-    this.providerConfig = objectExtend({}, defaultProviderConfig);
+    this.providerConfig = objectExtend({}, defaultProviderConfig$1);
     this.providerConfig = objectExtend(this.providerConfig, providerConfig);
     this.options = options;
   };
@@ -1218,7 +1218,7 @@
     var payload = objectExtend({}, userData);
 
     for (var key in this.providerConfig.responseParams) {
-      this.providerConfig.responseParams[key];
+      var value = this.providerConfig.responseParams[key];
 
       switch (key) {
         case 'code':
@@ -1607,21 +1607,54 @@
     });
   };
 
-  /**
-   * VueAuthenticate plugin
-   * @param {Object} Vue
-   * @param {Object} options
-   */
-  function plugin(Vue, options) {
-    if (plugin.installed) {
-      return;
-    }
+  // /**
+  //  * VueAuthenticate plugin
+  //  * @param {Object} Vue
+  //  * @param {Object} options
+  //  */
+  // function plugin(Vue, options) {
+  //   if (plugin.installed) {
+  //     return;
+  //   }
+  //
+  //   plugin.installed = true;
+  //
+  //   let vueAuthInstance = null;
+  //   Object.defineProperties(Vue.prototype, {
+  //     $auth: {
+  //       get() {
+  //         if (!vueAuthInstance) {
+  //           // Request handler library not found, throw error
+  //           if (!this.$http) {
+  //             throw new Error('Request handler instance not found');
+  //           }
+  //
+  //           vueAuthInstance = new VueAuthenticate(this.$http, options);
+  //         }
+  //         return vueAuthInstance;
+  //       },
+  //     },
+  //   });
+  // }
+  //
+  // /**
+  //  * External factory helper for ES5 and CommonJS
+  //  * @param  {Object} $http     Instance of request handling library
+  //  * @param  {Object} options   Configuration object
+  //  * @return {VueAuthenticate}  VueAuthenticate instance
+  //  */
+  // plugin.factory = function ($http, options) {
+  //   return new VueAuthenticate($http, options);
+  // };
+  //
+  // export default plugin;
+  var index = {
+    install: function (app, options) {
 
-    plugin.installed = true;
+      var vueAuthInstance = null;
+      app.config.globalProperties.$auth = new VueAuthenticate(app.$http, options);
 
-    var vueAuthInstance = null;
-    Object.defineProperties(Vue.prototype, {
-      $auth: {
+      app.config.globalProperties.$auth.get = {
         get: function get() {
           if (!vueAuthInstance) {
             // Request handler library not found, throw error
@@ -1633,20 +1666,11 @@
           }
           return vueAuthInstance;
         },
-      },
-    });
-  }
 
-  /**
-   * External factory helper for ES5 and CommonJS
-   * @param  {Object} $http     Instance of request handling library
-   * @param  {Object} options   Configuration object
-   * @return {VueAuthenticate}  VueAuthenticate instance
-   */
-  plugin.factory = function ($http, options) {
-    return new VueAuthenticate($http, options);
+      };
+    }
   };
 
-  return plugin;
+  return index;
 
 })));

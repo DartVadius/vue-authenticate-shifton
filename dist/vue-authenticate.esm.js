@@ -994,7 +994,7 @@ class OAuthPopup {
   }
 }
 
-const defaultProviderConfig$1 = {
+const defaultProviderConfig = {
   name: null,
   url: null,
   authorizationEndpoint: null,
@@ -1012,7 +1012,7 @@ class OAuth {
   constructor($http, storage, providerConfig, options) {
     this.$http = $http;
     this.storage = storage;
-    this.providerConfig = objectExtend({}, defaultProviderConfig$1);
+    this.providerConfig = objectExtend({}, defaultProviderConfig);
     this.providerConfig = objectExtend(this.providerConfig, providerConfig);
     this.options = options;
   }
@@ -1123,7 +1123,7 @@ class OAuth {
  * Default provider configuration
  * @type {Object}
  */
-const defaultProviderConfig = {
+const defaultProviderConfig$1 = {
   name: null,
   url: null,
   clientId: null,
@@ -1149,7 +1149,7 @@ class OAuth2 {
   constructor($http, storage, providerConfig, options) {
     this.$http = $http;
     this.storage = storage;
-    this.providerConfig = objectExtend({}, defaultProviderConfig);
+    this.providerConfig = objectExtend({}, defaultProviderConfig$1);
     this.providerConfig = objectExtend(this.providerConfig, providerConfig);
     this.options = options;
   }
@@ -1216,7 +1216,7 @@ class OAuth2 {
     let payload = objectExtend({}, userData);
 
     for (let key in this.providerConfig.responseParams) {
-      this.providerConfig.responseParams[key];
+      let value = this.providerConfig.responseParams[key];
 
       switch (key) {
         case 'code':
@@ -1597,21 +1597,54 @@ class VueAuthenticate {
   }
 }
 
-/**
- * VueAuthenticate plugin
- * @param {Object} Vue
- * @param {Object} options
- */
-function plugin(Vue, options) {
-  if (plugin.installed) {
-    return;
-  }
+// /**
+//  * VueAuthenticate plugin
+//  * @param {Object} Vue
+//  * @param {Object} options
+//  */
+// function plugin(Vue, options) {
+//   if (plugin.installed) {
+//     return;
+//   }
+//
+//   plugin.installed = true;
+//
+//   let vueAuthInstance = null;
+//   Object.defineProperties(Vue.prototype, {
+//     $auth: {
+//       get() {
+//         if (!vueAuthInstance) {
+//           // Request handler library not found, throw error
+//           if (!this.$http) {
+//             throw new Error('Request handler instance not found');
+//           }
+//
+//           vueAuthInstance = new VueAuthenticate(this.$http, options);
+//         }
+//         return vueAuthInstance;
+//       },
+//     },
+//   });
+// }
+//
+// /**
+//  * External factory helper for ES5 and CommonJS
+//  * @param  {Object} $http     Instance of request handling library
+//  * @param  {Object} options   Configuration object
+//  * @return {VueAuthenticate}  VueAuthenticate instance
+//  */
+// plugin.factory = function ($http, options) {
+//   return new VueAuthenticate($http, options);
+// };
+//
+// export default plugin;
+var index = {
+  install: (app, options) => {
 
-  plugin.installed = true;
+    let vueAuthInstance = null;
+    app.config.globalProperties.$auth = new VueAuthenticate(app.$http, options);
 
-  let vueAuthInstance = null;
-  Object.defineProperties(Vue.prototype, {
-    $auth: {
+    app.config.globalProperties.$auth.get = {
       get() {
         if (!vueAuthInstance) {
           // Request handler library not found, throw error
@@ -1623,18 +1656,9 @@ function plugin(Vue, options) {
         }
         return vueAuthInstance;
       },
-    },
-  });
-}
 
-/**
- * External factory helper for ES5 and CommonJS
- * @param  {Object} $http     Instance of request handling library
- * @param  {Object} options   Configuration object
- * @return {VueAuthenticate}  VueAuthenticate instance
- */
-plugin.factory = function ($http, options) {
-  return new VueAuthenticate($http, options);
+    };
+  }
 };
 
-export default plugin;
+export default index;
