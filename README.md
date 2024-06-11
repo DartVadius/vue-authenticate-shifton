@@ -1,4 +1,6 @@
-[**WARNING**]: README file is currently in process of rewrite and will be released soon.
+## Changes in vue-authenticate-shifton
+
+This is a fork of [dgrubelic/vue-authenticate](https://github.com/dgrubelic/vue-authenticate), mainly because I needed to use this with Vue3 
 
 # vue-authenticate
 
@@ -33,23 +35,25 @@ npm install vue-authenticate
 ```
 
 ## Usage
+
 ```javascript
-import Vue from 'vue'
-import VueAxios from 'vue-axios'
-import VueAuthenticate from 'vue-authenticate'
+import { createApp } from 'vue';
+import VueAuthenticate from 'vue-authenticate-shifton';
 import axios from 'axios';
 
-Vue.use(VueAxios, axios)
-Vue.use(VueAuthenticate, {
+const app = createApp(Root);
+
+app.use(VueAuthenticate, {
   baseUrl: 'http://localhost:3000', // Your API domain
-  
   providers: {
     github: {
       clientId: '',
       redirectUri: 'http://localhost:8080/auth/callback' // Your client app URL
     }
   }
-})
+});
+
+app.mount('#app');
 ```
 
 ### Email & password login and registration
