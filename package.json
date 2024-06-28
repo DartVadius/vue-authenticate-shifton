@@ -64,8 +64,8 @@
     "oauth 2.0"
   ],
   "dependencies": {
-    "axios": "^0.18.0",
-    "vue": "^2.6.10",
-    "vue-axios": "^2.1.4"
+    "axios": "^1.6.7",
+    "vue": "^3.4.26",
+    "vue-axios": "^3.5.2"
   }
 }
